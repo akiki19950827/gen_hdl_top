@@ -1,0 +1,59 @@
+class Chiplet:
+    def __init__(self, x: int, y: int):
+        self.x = x
+        self.y = y
+        self.north = None
+        self.south = None
+        self.east = None
+        self.west = None
+
+    def set_north(self, neighbor):
+        self.north = neighbor
+        neighbor.south = self
+
+    def set_south(self, neighbor):
+        self.south = neighbor
+        neighbor.north = self
+
+    def set_east(self, neighbor):
+        self.east = neighbor
+        neighbor.west = self
+
+    def set_west(self, neighbor):
+        self.west = neighbor
+        neighbor.east = self
+
+
+def gen_chiplet_matrix(row_size, col_size):
+    matrix = [[Chiplet(x, y) for y in range(col_size)]
+              for x in range(row_size)]
+    for x in range(row_size):
+        for y in range(col_size):
+            object = matrix[x][y]
+
+            if x > 0:
+                object.set_west(matrix[x - 1][y])
+            if x < row_size - 1:
+                object.set_east(matrix[x + 1][y])
+            if y > 0:
+                object.set_north(matrix[x][y - 1])
+            if y < col_size - 1:
+                object.set_south(matrix[x][y + 1])
+
+    return matrix
+
+
+def print_chiplet_connection(matrix):
+    row_size = len(matrix)
+    col_size = len(matrix[0])
+    for x in range(row_size):
+        for y in range(col_size):
+            obj = matrix[x][y]
+            print(f"({x},{y}) object: north=({obj.north.x},{obj.north.y})"
+                  if obj.north else f"({x},{y}) object: north=None", end=", ")
+            print(f"south=({obj.south.x},{obj.south.y})"
+                  if obj.south else "south=None", end=", ")
+            print(f"east=({obj.east.x},{obj.east.y})"
+                  if obj.east else "east=None", end=", ")
+            print(f"west=({obj.west.x},{obj.west.y})"
+                  if obj.west else "west=None", end="\n\n")
